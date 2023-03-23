@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import pytest
 
 
 class Singleton:
@@ -38,16 +39,19 @@ class Singleton:
             print("No database connection")
             return []
 
-
 def initialize_database(): 
     """Initialise a file, and use sqlite3 to generate a small table we'll use for testing"""
     connection = sqlite3.connect("aquarium.db")
     cursor = connection.cursor()
     print("INTIALIZING DATABASE")
+    #cursor.execute(Create)
+    #cursor.execute(Insert1)
+    #cursor.execute(Insert2)
     cursor.execute("CREATE TABLE fish (name TEXT, species TEXT, tank_number INTEGER)")
     cursor.execute("INSERT INTO fish VALUES ('Sammy', 'shark', 1)")
     cursor.execute("INSERT INTO fish VALUES ('Jamie', 'cuttlefish', 7)")
     connection.commit()
+
 
 def delete_database():
     """Delete, or clear the entire database completely
@@ -98,7 +102,6 @@ def test_resetting_after_db_creation():
     db_a.get_cursor()
     assert 2 == len(db_b.sql("SELECT * FROM fish;"))
 
-
     
 if __name__=="__main__":
 
@@ -113,5 +116,5 @@ if __name__=="__main__":
         rows = db.sql(stmt)
         for row in rows:
             print(row)
-            
+
 
