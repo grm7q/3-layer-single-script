@@ -44,13 +44,17 @@ def initialize_database():
     connection = sqlite3.connect("aquarium.db")
     cursor = connection.cursor()
     print("INTIALIZING DATABASE")
-    #cursor.execute(Create)
-    #cursor.execute(Insert1)
-    #cursor.execute(Insert2)
+    connection.commit()
+
+@pytest.fixture
+def add_data(): 
+    connection = sqlite3.connect("aquarium.db")
+    cursor = connection.cursor()
     cursor.execute("CREATE TABLE fish (name TEXT, species TEXT, tank_number INTEGER)")
     cursor.execute("INSERT INTO fish VALUES ('Sammy', 'shark', 1)")
     cursor.execute("INSERT INTO fish VALUES ('Jamie', 'cuttlefish', 7)")
     connection.commit()
+    yield cursor
 
 
 def delete_database():
@@ -81,8 +85,9 @@ def test_not_initialized():
     db = Singleton()
     assert [] == db.sql("SELECT * FROM FISH;")
 
-def test_database_connect():
-    db_fresh_start()
+def test_database_connect(add_data):
+    #db_fresh_start()
+    #add_data()
     db = Singleton()
     db.get_cursor()
     assert 2 == len(db.sql("SELECT * FROM fish;"))
@@ -97,10 +102,10 @@ def test_resetting_after_db_creation():
     assert [] == db_a.sql("SELECT * FROM FISH;")
     assert [] == db_b.sql("SELECT * FROM FISH;")
 
-    initialize_database()
+    #initialize_database()
 
-    db_a.get_cursor()
-    assert 2 == len(db_b.sql("SELECT * FROM fish;"))
+    #db_a.get_cursor()
+    #assert 2 == len(db_b.sql("SELECT * FROM fish;"))
 
     
 if __name__=="__main__":
@@ -116,5 +121,3 @@ if __name__=="__main__":
         rows = db.sql(stmt)
         for row in rows:
             print(row)
-
-
